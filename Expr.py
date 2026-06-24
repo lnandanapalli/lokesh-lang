@@ -11,7 +11,7 @@ class Expr:
 class NumberLiteral(Expr):
     def __init__(self, value: int) -> None:
         super().__init__()
-        self.value: int = value
+        self.value = value
 
     def __repr__(self):
         return f"NumberLiteral(value={self.value})"
@@ -19,9 +19,9 @@ class NumberLiteral(Expr):
 class Binary(Expr):
     def __init__(self, left: Expr, operator: Token, right: Expr) -> None:
         super().__init__()
-        self.left: Expr = left
-        self.operator: Token = operator
-        self.right: Expr = right
+        self.left = left
+        self.operator = operator
+        self.right = right
 
     def __repr__(self):
         return f"Binary(left={self.left}, operator={self.operator}, right={self.right})"

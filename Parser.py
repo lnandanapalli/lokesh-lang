@@ -4,7 +4,7 @@ from Token import Token, TokenType
 
 class Parser:
     def __init__(self, tokens: list[Token]):
-        self.tokens: list[Token] = tokens
+        self.tokens = tokens
         self.current_position: int = 0
 
     def parse(self) -> Expr:
@@ -52,8 +52,6 @@ class Parser:
         return self._previous()
 
     def _check(self, type_of_token: TokenType) -> bool:
-        if self._is_at_end():
-            return type_of_token == TokenType.END_OF_FILE
         return self._peek().type == type_of_token
 
     def _consume(self, type_of_token: TokenType, message: str) -> Token:
