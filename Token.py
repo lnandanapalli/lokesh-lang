@@ -1,16 +1,9 @@
 """
 Token Types
 
-E -> E + T
-E -> E - T
-E -> T
-
-T -> T * F
-T -> T / F
-T -> F
-
-F -> integer
-F -> (E)
+E -> T ('+' | '-' T)*
+T -> F ('*' | '/' F)*
+F -> integer | '(' E ')'
 """
 
 from enum import Enum
@@ -23,6 +16,7 @@ class TokenType(Enum):
     SLASH = "SLASH"
     OPEN_PARENTHESIS = "OPEN_PARENTHESIS"
     CLOSE_PARENTHESIS = "CLOSE_PARENTHESIS"
+    END_OF_FILE = "END_OF_FILE"
 
 class Token:
     def __init__(self, token_type: TokenType, literal: str = "") -> None:
@@ -30,4 +24,4 @@ class Token:
         self.literal = literal
 
     def __repr__(self) -> str:
-        return f"Token({self.type.name}, {self.literal})" if self.literal else f"Token({self.type.name})"
+        return f"Token(type={self.type.name}, literal={self.literal})"

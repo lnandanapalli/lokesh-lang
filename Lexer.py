@@ -54,4 +54,5 @@ class Lexer:
     def scan_tokens(self) -> list[Token]:
         while not self._is_end():
             self._scan_next_token()
+        self.tokens.append(Token(TokenType.END_OF_FILE))
         return self.tokens
