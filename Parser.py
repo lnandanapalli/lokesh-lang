@@ -6,33 +6,50 @@ class Parser:
     def __init__(self, tokens: list[Token]):
         self.tokens = tokens
         self.current_position: int = 0
+        self.enable_tracing: bool = False
+
+    def _log(self, stmt: str):
+        if self.enable_tracing:
+            print(stmt)
 
     def parse(self) -> Expr:
+        self._log("parse() Top level public parse function called")
         expression: Expr = self._parse_expression()
+        self._log("parse() Done parsing expression, verifying EOF exists")
         self._consume(TokenType.END_OF_FILE, "Expected EOF to terminate the program")
         return expression
 
     def _parse_expression(self) -> Expr:
+        self._log("parseExpression() called, will start by parsing term()")
         working_expression: Expr = self._parse_term()
+        self._log("parseExpression() done parsing term, now checking for + - Term")
         while self._match(TokenType.PLUS, TokenType.MINUS):
+            self._log(f"parseExpression() found a {self._previous()}, will parse term again")
             operator: Token = self._previous()
             parsed_term: Expr = self._parse_term()
             working_expression = Binary(working_expression, operator, parsed_term)
         return working_expression
 
     def _parse_term(self) -> Expr:
+        self._log("parseTerm() called, will start by calling parseFactor()")
         working_expression: Expr = self._parse_factor()
+        self._log("parseTerm() done parsing term, now checking for * / Term")
         while self._match(TokenType.STAR, TokenType.SLASH):
+            self._log(f"parseTerm() found a {self._previous()}, will parse term again")
             operator: Token = self._previous()
             parsed_factor: Expr = self._parse_factor()
             working_expression = Binary(working_expression, operator, parsed_factor)
         return working_expression
 
     def _parse_factor(self) -> Expr:
+        self._log("parseFactor() called")
         if self._match(TokenType.NUMBER):
+            self._log(f"parseFactor() matched a {self._previous()}, will return literal")
             return NumberLiteral(int(self._previous().literal))
         if self._match(TokenType.OPEN_PARENTHESIS):
+            self._log("parseFactor() matched an open parenthesis, will parse expression now")
             parsed_expression: Expr = self._parse_expression()
+            self._log("parseFactor() done parsing expression, checking for close parenthesis")
             self._consume(TokenType.CLOSE_PARENTHESIS, "Failed to parse a factor, Expected ) following (")
             return parsed_expression
         raise ValueError("Unable to parse a factor, Expected a number or open parenthesis")
