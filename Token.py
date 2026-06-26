@@ -6,7 +6,8 @@ T -> F ('*' | '/' F)*
 F -> integer | '(' E ')'
 """
 
-from enum import Enum
+from enum import Enum, auto
+from dataclasses import dataclass
 
 class TokenType(Enum):
     NUMBER = "NUMBER"
@@ -18,10 +19,7 @@ class TokenType(Enum):
     CLOSE_PARENTHESIS = "CLOSE_PARENTHESIS"
     END_OF_FILE = "END_OF_FILE"
 
+@dataclass()
 class Token:
-    def __init__(self, token_type: TokenType, literal: str = "") -> None:
-        self.type = token_type
-        self.literal = literal
-
-    def __repr__(self) -> str:
-        return f"Token(type={self.type.name}, literal={self.literal})"
+    type: TokenType
+    literal: str = ""

@@ -1,27 +1,16 @@
 from Token import Token
+from dataclasses import dataclass
 
 
 class Expr:
-    def __init__(self):
-        pass
+    pass
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}()"
-
+@dataclass()
 class NumberLiteral(Expr):
-    def __init__(self, value: int) -> None:
-        super().__init__()
-        self.value = value
+    value: int
 
-    def __repr__(self):
-        return f"NumberLiteral(value={self.value})"
-
+@dataclass()
 class Binary(Expr):
-    def __init__(self, left: Expr, operator: Token, right: Expr) -> None:
-        super().__init__()
-        self.left = left
-        self.operator = operator
-        self.right = right
-
-    def __repr__(self):
-        return f"Binary(left={self.left}, operator={self.operator}, right={self.right})"
+    left: Expr
+    operator: Token
+    right: Expr
