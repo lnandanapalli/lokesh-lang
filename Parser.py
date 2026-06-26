@@ -3,13 +3,13 @@ from Token import Token, TokenType
 
 
 class Parser:
-    def __init__(self, tokens: list[Token]):
+    def __init__(self, tokens: list[Token], should_log: bool = True):
         self.tokens = tokens
         self.current_position: int = 0
-        self.enable_tracing: bool = False
+        self.should_log = should_log
 
     def _log(self, stmt: str):
-        if self.enable_tracing:
+        if self.should_log:
             print(stmt)
 
     def parse(self) -> Expr:

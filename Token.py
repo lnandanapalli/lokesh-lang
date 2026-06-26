@@ -6,7 +6,7 @@ T -> F ('*' | '/' F)*
 F -> integer | '(' E ')'
 """
 
-from enum import Enum, auto
+from enum import Enum
 from dataclasses import dataclass
 
 class TokenType(Enum):

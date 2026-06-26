@@ -1,6 +1,12 @@
 from dataclasses import dataclass
+from typing import ClassVar
 
+@dataclass()
 class Instruction:
+    Add: ClassVar["Instruction"]
+    Sub: ClassVar["Instruction"]
+    Mul: ClassVar["Instruction"]
+    Div: ClassVar["Instruction"]
     pass
 
 @dataclass
