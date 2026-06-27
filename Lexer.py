@@ -1,6 +1,3 @@
-"""
-Lexer
-"""
 from Token import TokenType, Token
 
 
@@ -24,6 +21,16 @@ class Lexer:
             self._advance()
         self.tokens.append(Token(TokenType.NUMBER, self.input[number_start:self.current_position]))
 
+    def _scan_identifier(self):
+        identifier_start: int = self.current_position - 1
+        while self._peek().isalpha():
+            self._advance()
+        literal = self.input[identifier_start:self.current_position]
+        if literal == "let":
+            self.tokens.append(Token(TokenType.LET))
+        else:
+            self.tokens.append(Token(TokenType.IDENTIFIER, literal))
+
     def _peek(self) -> str:
         if self._is_end():
             return "EOF"
@@ -31,7 +38,11 @@ class Lexer:
 
     def _scan_next_token(self) -> None:
         current_char: str = self._advance()
-        if current_char == "(":
+        if current_char == "=":
+            self.tokens.append(Token(TokenType.EQUAL))
+        elif current_char == ";":
+            self.tokens.append(Token(TokenType.SEMICOLON))
+        elif current_char == "(":
             self.tokens.append(Token(TokenType.OPEN_PARENTHESIS))
         elif current_char == ")":
             self.tokens.append(Token(TokenType.CLOSE_PARENTHESIS))
@@ -48,6 +59,8 @@ class Lexer:
         elif current_char.isspace():
             # Whitespace Ignored
             pass
+        elif current_char.isalpha():
+            self._scan_identifier()
         else:
             raise ValueError(f"Unexpected token '{current_char}'")
 

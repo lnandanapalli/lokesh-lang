@@ -6,13 +6,14 @@ from Parser import Parser
 from Token import Token
 from Lexer import Lexer
 
-source: str = "1 + 2 + 3 + 4"
+source: str = "let x = 5*2; x+3;"
 print(source)
 
 tokens: list[Token] = Lexer(source).scan_tokens()
-# for token in tokens:
-#     print(token)
+for token in tokens:
+    print(token)
 print("===")
+exit()
 
 expression: Expr = Parser(tokens, should_log=False).parse()
 

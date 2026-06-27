@@ -1,3 +1,17 @@
+"""
+Grammar:
+
+expression -> term ('+' | '-' term)*
+term -> factor ('*' | '/' factor)*
+factor -> integer | '(' expression ')' | identifier
+
+program -> statement*
+statement -> "let" identifier "=" expression ';' | expression ';'
+identifier -> [a-z][a-z]*
+
+Start symbol = statement
+"""
+
 from Expr import Expr, NumberLiteral, Binary
 from Token import Token, TokenType
 
