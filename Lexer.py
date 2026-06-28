@@ -1,5 +1,7 @@
 from Token import TokenType, Token
 
+class EOF:
+    pass
 
 class Lexer:
     def __init__(self, input_string: str) -> None:
@@ -17,23 +19,27 @@ class Lexer:
 
     def _scan_number(self) -> None:
         number_start: int = self.current_position - 1
-        while self._peek().isdigit():
+        peek_result = self._peek()
+        while not isinstance(peek_result, EOF) and peek_result.isdigit():
             self._advance()
+            peek_result = self._peek()
         self.tokens.append(Token(TokenType.NUMBER, self.input[number_start:self.current_position]))
 
     def _scan_identifier(self):
         identifier_start: int = self.current_position - 1
-        while self._peek().isalpha():
+        peek_result = self._peek()
+        while not isinstance(peek_result, EOF) and peek_result.isalpha():
             self._advance()
+            peek_result = self._peek()
         literal = self.input[identifier_start:self.current_position]
         if literal == "let":
             self.tokens.append(Token(TokenType.LET))
         else:
             self.tokens.append(Token(TokenType.IDENTIFIER, literal))
 
-    def _peek(self) -> str:
+    def _peek(self) -> EOF | str:
         if self._is_end():
-            return "EOF"
+            return EOF()
         return self.input[self.current_position]
 
     def _scan_next_token(self) -> None:

@@ -12,7 +12,8 @@ identifier -> [a-z][a-z]*
 Start symbol = statement
 """
 
-from Expr import Expr, NumberLiteral, Binary
+from Expr import Expr, NumberLiteral, Binary, Variable
+from Stmt import Stmt, VarDeclaration, ExpressionStmt
 from Token import Token, TokenType
 
 
@@ -26,12 +27,31 @@ class Parser:
         if self.should_log:
             print(stmt)
 
-    def parse(self) -> Expr:
+    def parse(self) -> list[Stmt]:
         self._log("parse() Top level public parse function called")
-        expression: Expr = self._parse_expression()
+        statements: list[Stmt] = []
+        while not self._is_at_end():
+            statements.append(self._parse_statement())
         self._log("parse() Done parsing expression, verifying EOF exists")
         self._consume(TokenType.END_OF_FILE, "Expected EOF to terminate the program")
-        return expression
+        return statements
+
+    def _parse_statement(self):
+        if self._match(TokenType.LET):
+            return self._parse_var_declaration()
+        return self._parse_expression_statement()
+
+    def _parse_var_declaration(self) -> Stmt:
+        name: str = self._consume(TokenType.IDENTIFIER, "Expected a name for a variable declaration").literal
+        self._consume(TokenType.EQUAL, "Expected equals sign after a variable name")
+        initializer: Expr = self._parse_expression()
+        self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
+        return VarDeclaration(name, initializer)
+
+    def _parse_expression_statement(self) -> Stmt:
+        expression: Expr = self._parse_expression()
+        self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
+        return ExpressionStmt(expression)
 
     def _parse_expression(self) -> Expr:
         self._log("parseExpression() called, will start by parsing term()")
@@ -66,6 +86,8 @@ class Parser:
             self._log("parseFactor() done parsing expression, checking for close parenthesis")
             self._consume(TokenType.CLOSE_PARENTHESIS, "Failed to parse a factor, Expected ) following (")
             return parsed_expression
+        if self._match(TokenType.IDENTIFIER):
+            return Variable(self._previous().literal)
         raise ValueError("Unable to parse a factor, Expected a number or open parenthesis")
 
     def _peek(self) -> Token:

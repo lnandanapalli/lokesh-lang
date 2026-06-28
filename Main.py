@@ -1,8 +1,9 @@
 from Compiler import Compiler
-from Expr import Expr, NumberLiteral, Binary
+from Expr import Expr, NumberLiteral, Binary, Variable
 from Instruction import Instruction
 from Machine import Machine
 from Parser import Parser
+from Stmt import Stmt, VarDeclaration, ExpressionStmt
 from Token import Token
 from Lexer import Lexer
 
@@ -10,24 +11,37 @@ source: str = "let x = 5*2; x+3;"
 print(source)
 
 tokens: list[Token] = Lexer(source).scan_tokens()
-for token in tokens:
-    print(token)
+# for token in tokens:
+#     print(token)
 print("===")
-exit()
 
-expression: Expr = Parser(tokens, should_log=False).parse()
+program: list[Stmt] = Parser(tokens, should_log=False).parse()
 
-def pretty_print(expr: Expr, indent: int):
+def pretty_print_stmt(stmt: Stmt, indent: int):
+    padding: str = "    " * indent
+    if isinstance(stmt, VarDeclaration):
+        print(f"{padding}VarDeclaration named {stmt.name}")
+        pretty_print_expr(stmt.initializer, indent + 1)
+    elif isinstance(stmt, ExpressionStmt):
+        print(f"{padding}ExpressionStmt")
+        pretty_print_expr(stmt.expression, indent + 1)
+
+
+def pretty_print_expr(expr: Expr, indent: int):
     padding: str = "    " * indent
     if isinstance(expr, NumberLiteral):
         print(f"{padding}Number({expr.value})")
     elif isinstance(expr, Binary):
         print(f"{padding}Binary({expr.operator.type})")
-        pretty_print(expr.left, indent + 1)
-        pretty_print(expr.right, indent + 1)
+        pretty_print_expr(expr.left, indent + 1)
+        pretty_print_expr(expr.right, indent + 1)
+    elif isinstance(expr, Variable):
+        print(f"{padding}Variable({expr.name})")
 
-pretty_print(expression, 0)
-instructions: list[Instruction] = Compiler(should_log=False).compile(expression)
+for stmt_of_program in program:
+    pretty_print_stmt(stmt_of_program, 0)
+exit()
+instructions: list[Instruction] = Compiler(should_log=False).compile(program)
 print("===")
 for instruction in instructions:
     print(instruction)

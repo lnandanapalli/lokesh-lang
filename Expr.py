@@ -14,3 +14,7 @@ class Binary(Expr):
     left: Expr
     operator: Token
     right: Expr
+
+@dataclass()
+class Variable(Expr):
+    name: str
