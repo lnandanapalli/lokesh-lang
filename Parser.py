@@ -6,14 +6,16 @@ term -> factor ('*' | '/' factor)*
 factor -> integer | '(' expression ')' | identifier
 
 program -> statement*
-statement -> "let" identifier "=" expression ';' | expression ';'
+statement -> "let" identifier "=" expression ';'
+             | expression ';'
+             | "update" identifier "to" expression;
 identifier -> [a-z][a-z]*
 
 Start symbol = statement
 """
 
 from Expr import Expr, NumberLiteral, Binary, Variable
-from Stmt import Stmt, VarDeclaration, ExpressionStmt
+from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate
 from Token import Token, TokenType
 
 
@@ -39,7 +41,16 @@ class Parser:
     def _parse_statement(self):
         if self._match(TokenType.LET):
             return self._parse_var_declaration()
+        elif self._match(TokenType.UPDATE):
+            return self._parse_var_update()
         return self._parse_expression_statement()
+
+    def _parse_var_update(self) -> Stmt:
+        name: str = self._consume(TokenType.IDENTIFIER, "Must specify variable name to update").literal
+        self._consume(TokenType.TO, "Expected literal 'to")
+        value: Expr = self._parse_expression()
+        self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
+        return VarUpdate(name, value)
 
     def _parse_var_declaration(self) -> Stmt:
         name: str = self._consume(TokenType.IDENTIFIER, "Expected a name for a variable declaration").literal

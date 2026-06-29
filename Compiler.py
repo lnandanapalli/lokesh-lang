@@ -1,6 +1,6 @@
 from Expr import Expr, NumberLiteral, Binary, Variable
 from Instruction import Instruction, PushInt, StoreLocal, LoadLocal
-from Stmt import Stmt, ExpressionStmt, VarDeclaration
+from Stmt import Stmt, ExpressionStmt, VarDeclaration, VarUpdate
 from Token import Token, TokenType
 
 
@@ -34,6 +34,13 @@ class Compiler:
                 self.next_local_slot += 1
                 self.locals[stmt.name] = slot
                 instructions.append(StoreLocal(slot))
+        elif isinstance(stmt, VarUpdate):
+            slot: int = self.locals[stmt.name]
+            if slot is None:
+                raise ValueError(f"Failed to update a variable with {stmt.name} as name before declaration")
+            self._emit(stmt.value, instructions)
+            instructions.append(StoreLocal(slot))
+
 
     def _emit(self, expr: Expr, instructions: list[Instruction]):
         log_id = self._next_unique_number

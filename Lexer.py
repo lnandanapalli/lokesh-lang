@@ -34,6 +34,10 @@ class Lexer:
         literal = self.input[identifier_start:self.current_position]
         if literal == "let":
             self.tokens.append(Token(TokenType.LET))
+        elif literal == "update":
+            self.tokens.append(Token(TokenType.UPDATE))
+        elif literal == "to":
+            self.tokens.append(Token(TokenType.TO))
         else:
             self.tokens.append(Token(TokenType.IDENTIFIER, literal))
 

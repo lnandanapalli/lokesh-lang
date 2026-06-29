@@ -3,13 +3,14 @@ from Expr import Expr, NumberLiteral, Binary, Variable
 from Instruction import Instruction
 from Machine import Machine
 from Parser import Parser
-from Stmt import Stmt, VarDeclaration, ExpressionStmt
+from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate
 from Token import Token
 from Lexer import Lexer
 
 source: str = """
-let day = 160;
+let day = 161;
 let month = 6;
+update day to 160;
 let birthday = day + month;
 birthday;
 """
@@ -30,6 +31,9 @@ def pretty_print_stmt(stmt: Stmt, indent: int):
     elif isinstance(stmt, ExpressionStmt):
         print(f"{padding}ExpressionStmt")
         pretty_print_expr(stmt.expression, indent + 1)
+    elif isinstance(stmt, VarUpdate):
+        print(f"{padding}VarUpdate named {stmt.name}")
+        pretty_print_expr(stmt.value, indent + 1)
 
 
 def pretty_print_expr(expr: Expr, indent: int):

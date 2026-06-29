@@ -14,6 +14,8 @@ class TokenType(Enum):
     IDENTIFIER = "IDENTIFIER"
     EQUAL = "EQUAL"
     SEMICOLON = "SEMICOLON"
+    UPDATE = "UPDATE"
+    TO = "TO"
 
 @dataclass()
 class Token:

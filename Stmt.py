@@ -14,3 +14,8 @@ class VarDeclaration(Stmt):
 @dataclass()
 class ExpressionStmt(Stmt):
     expression: Expr
+
+@dataclass()
+class VarUpdate(Stmt):
+    name: str
+    value: Expr
