@@ -7,7 +7,12 @@ from Stmt import Stmt, VarDeclaration, ExpressionStmt
 from Token import Token
 from Lexer import Lexer
 
-source: str = "let x = 5*2; x+3;"
+source: str = """
+let day = 160;
+let month = 6;
+let birthday = day + month;
+birthday;
+"""
 print(source)
 
 tokens: list[Token] = Lexer(source).scan_tokens()
@@ -40,12 +45,11 @@ def pretty_print_expr(expr: Expr, indent: int):
 
 for stmt_of_program in program:
     pretty_print_stmt(stmt_of_program, 0)
-exit()
+
 instructions: list[Instruction] = Compiler(should_log=False).compile(program)
 print("===")
 for instruction in instructions:
     print(instruction)
-
 final_stack: list[int] = Machine().run(instructions)
 print("===")
 print(f"Final stack = {final_stack}")

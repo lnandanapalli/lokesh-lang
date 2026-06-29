@@ -45,3 +45,11 @@ Instruction.Add = _Add()
 Instruction.Sub = _Sub()
 Instruction.Mul = _Mul()
 Instruction.Div = _Div()
+
+@dataclass()
+class LoadLocal(Instruction):
+    slot: int
+
+@dataclass()
+class StoreLocal(Instruction):
+    slot: int
