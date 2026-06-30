@@ -14,10 +14,11 @@ class TokenType(Enum):
     IDENTIFIER = "IDENTIFIER"
     EQUAL = "EQUAL"
     SEMICOLON = "SEMICOLON"
-    UPDATE = "UPDATE"
-    TO = "TO"
     LESS_THAN = "LESS_THAN"
     GREATER_THAN = "GREATER_THAN"
+    OPEN_BRACE = "OPEN_BRACE"
+    CLOSE_BRACE = "CLOSE_BRACE"
+    IF = "IF"
 
 @dataclass()
 class Token:

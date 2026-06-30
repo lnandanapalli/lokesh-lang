@@ -1,4 +1,4 @@
-from Instruction import Instruction, PushInt, StoreLocal, LoadLocal
+from Instruction import Instruction, PushInt, StoreLocal, LoadLocal, JumpIfFalse
 
 
 class Machine:
@@ -7,8 +7,17 @@ class Machine:
         self.locals: dict[int, int] = {}
 
     def run(self, instructions: list[Instruction]) -> list[int]:
-        for instruction in instructions:
-            self._execute(instruction)
+        pc = 0
+        while pc < len(instructions):
+            instruction = instructions[pc]
+            if isinstance(instruction, JumpIfFalse):
+                condition = self._pop()
+                if condition == 0:
+                    pc = instruction.target
+                    continue
+            else:
+                self._execute(instruction)
+            pc += 1
         return list(self.stack)
 
     def _execute(self, instruction: Instruction):
@@ -38,17 +47,11 @@ class Machine:
         elif instruction is Instruction.LessThan:
             right = self._pop()
             left = self._pop()
-            if left < right:
-                self.stack.append(1)
-            else:
-                self.stack.append(0)
+            self.stack.append(1 if left < right else 0)
         elif instruction is Instruction.GreaterThan:
             right = self._pop()
             left = self._pop()
-            if left > right:
-                self.stack.append(1)
-            else:
-                self.stack.append(0)
+            self.stack.append(1 if left > right else 0)
         else:
             raise ValueError(f"Unsupported instruction {instruction}")
 

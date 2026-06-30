@@ -32,12 +32,10 @@ class Lexer:
             self._advance()
             peek_result = self._peek()
         literal = self.input[identifier_start:self.current_position]
-        if literal == "let":
+        if literal == "if":
+            self.tokens.append(Token(TokenType.IF))
+        elif literal == "let":
             self.tokens.append(Token(TokenType.LET))
-        elif literal == "update":
-            self.tokens.append(Token(TokenType.UPDATE))
-        elif literal == "to":
-            self.tokens.append(Token(TokenType.TO))
         else:
             self.tokens.append(Token(TokenType.IDENTIFIER, literal))
 
@@ -48,7 +46,11 @@ class Lexer:
 
     def _scan_next_token(self) -> None:
         current_char: str = self._advance()
-        if current_char == "=":
+        if current_char == "{":
+            self.tokens.append(Token(TokenType.OPEN_BRACE))
+        elif current_char == "}":
+            self.tokens.append(Token(TokenType.CLOSE_BRACE))
+        elif current_char == "=":
             self.tokens.append(Token(TokenType.EQUAL))
         elif current_char == ";":
             self.tokens.append(Token(TokenType.SEMICOLON))

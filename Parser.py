@@ -6,17 +6,17 @@ term -> factor ('*' | '/' factor)*
 factor -> integer | '(' expression ')' | identifier
 
 program -> statement*
-statement -> "let" identifier "=" expression ';'
-             | cexpression ';'
-             | "update" identifier "to" expression;
-             "if" "(" cexpression ")" "{" statement* "}";
+statement -> "let" identifier "=" expression ";"
+           | cexpression ";"
+           | identifier "=" cexpression ";"
+           | "if" "(" cexpression ")" "{" statement* "}"
 identifier -> [a-z][a-z]*
 
 Start symbol = statement
 """
 
 from Expr import Expr, NumberLiteral, Binary, Variable
-from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate
+from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate, IfStmt
 from Token import Token, TokenType
 
 
@@ -42,16 +42,20 @@ class Parser:
     def _parse_statement(self):
         if self._match(TokenType.LET):
             return self._parse_var_declaration()
-        elif self._match(TokenType.UPDATE):
-            return self._parse_var_update()
+        elif self._match(TokenType.IF):
+            return self._parse_if_statement()
         return self._parse_expression_statement()
 
-    def _parse_var_update(self) -> Stmt:
-        name: str = self._consume(TokenType.IDENTIFIER, "Must specify variable name to update").literal
-        self._consume(TokenType.TO, "Expected literal 'to")
-        value: Expr = self._parse_expression()
-        self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
-        return VarUpdate(name, value)
+    def _parse_if_statement(self) -> Stmt:
+        self._consume(TokenType.OPEN_PARENTHESIS, "Expected ( after if")
+        condition: Expr = self._parse_cexpression()
+        self._consume(TokenType.CLOSE_PARENTHESIS, "Expected ) after condition")
+        self._consume(TokenType.OPEN_BRACE, "Expected { after )")
+        body: list[Stmt] = []
+        while not self._check(TokenType.CLOSE_BRACE) and not self._is_at_end():
+            body.append(self._parse_statement())
+        self._consume(TokenType.CLOSE_BRACE, "Expected } to end if statement body")
+        return IfStmt(condition, body)
 
     def _parse_var_declaration(self) -> Stmt:
         name: str = self._consume(TokenType.IDENTIFIER, "Expected a name for a variable declaration").literal
@@ -61,9 +65,15 @@ class Parser:
         return VarDeclaration(name, initializer)
 
     def _parse_expression_statement(self) -> Stmt:
-        expression: Expr = self._parse_cexpression()
-        self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
-        return ExpressionStmt(expression)
+        expr: Expr = self._parse_cexpression()
+        if self._match(TokenType.EQUAL):
+            if not isinstance(expr, Variable):
+                raise ValueError("Invalid assignment target")
+            value: Expr = self._parse_cexpression()
+            self._consume(TokenType.SEMICOLON, "Expected semicolon at end of statement")
+            return VarUpdate(expr.name, value)
+        self._consume(TokenType.SEMICOLON, "Expected semicolon at end of statement")
+        return ExpressionStmt(expr)
 
     def _parse_cexpression(self) -> Expr:
         working_expression: Expr = self._parse_expression()

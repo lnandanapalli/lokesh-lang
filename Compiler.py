@@ -1,6 +1,6 @@
 from Expr import Expr, NumberLiteral, Binary, Variable
-from Instruction import Instruction, PushInt, StoreLocal, LoadLocal
-from Stmt import Stmt, ExpressionStmt, VarDeclaration, VarUpdate
+from Instruction import Instruction, PushInt, StoreLocal, LoadLocal, JumpIfFalse
+from Stmt import Stmt, ExpressionStmt, VarDeclaration, VarUpdate, IfStmt
 from Token import Token, TokenType
 
 
@@ -35,11 +35,19 @@ class Compiler:
                 self.locals[stmt.name] = slot
                 instructions.append(StoreLocal(slot))
         elif isinstance(stmt, VarUpdate):
-            slot: int = self.locals[stmt.name]
+            slot: int | None = self.locals.get(stmt.name)
             if slot is None:
                 raise ValueError(f"Failed to update a variable with {stmt.name} as name before declaration")
             self._emit(stmt.value, instructions)
             instructions.append(StoreLocal(slot))
+        elif isinstance(stmt, IfStmt):
+            self._emit(stmt.condition, instructions)
+            jump_instruction_index: int = len(instructions)
+            instructions.append(JumpIfFalse(0))
+            for body_stmt in stmt.body:
+                self._emit_stmt(body_stmt, instructions)
+            real_jump_location = len(instructions)
+            instructions[jump_instruction_index] = JumpIfFalse(real_jump_location)
 
 
     def _emit(self, expr: Expr, instructions: list[Instruction]):
@@ -58,7 +66,7 @@ class Compiler:
             self._log(f"[{log_id}] Now adding binary operator {self._instruction_for_operator(expr.operator)}")
             instructions.append(self._instruction_for_operator(expr.operator))
         elif isinstance(expr, Variable):
-            slot: int | None = self.locals[expr.name]
+            slot: int | None = self.locals.get(expr.name)
             if slot is None:
                 raise ValueError(f"Referencing an undefined variable {expr.name}")
             instructions.append(LoadLocal(slot))

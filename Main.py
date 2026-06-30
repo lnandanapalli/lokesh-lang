@@ -3,12 +3,16 @@ from Expr import Expr, NumberLiteral, Binary, Variable
 from Instruction import Instruction
 from Machine import Machine
 from Parser import Parser
-from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate
+from Stmt import Stmt, VarDeclaration, ExpressionStmt, VarUpdate, IfStmt
 from Token import Token
 from Lexer import Lexer
 
 source: str = """
-1 < 2;
+let x = 3;
+if (x < 5) {
+x = x + 10;
+}
+x;
 """
 print(source)
 
@@ -30,7 +34,13 @@ def pretty_print_stmt(stmt: Stmt, indent: int):
     elif isinstance(stmt, VarUpdate):
         print(f"{padding}VarUpdate named {stmt.name}")
         pretty_print_expr(stmt.value, indent + 1)
-
+    elif isinstance(stmt, IfStmt):
+        print(f"{padding}If Statement")
+        print(f"{padding}Condition")
+        pretty_print_expr(stmt.condition, indent + 2)
+        print(f"{padding}Body")
+        for body_item in stmt.body:
+            pretty_print_stmt(body_item, indent + 2)
 
 def pretty_print_expr(expr: Expr, indent: int):
     padding: str = "    " * indent

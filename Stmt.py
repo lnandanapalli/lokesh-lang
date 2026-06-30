@@ -19,3 +19,8 @@ class ExpressionStmt(Stmt):
 class VarUpdate(Stmt):
     name: str
     value: Expr
+
+@dataclass()
+class IfStmt(Stmt):
+    condition: Expr
+    body: list[Stmt]
