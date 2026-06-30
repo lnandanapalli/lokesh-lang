@@ -16,6 +16,8 @@ class TokenType(Enum):
     SEMICOLON = "SEMICOLON"
     UPDATE = "UPDATE"
     TO = "TO"
+    LESS_THAN = "LESS_THAN"
+    GREATER_THAN = "GREATER_THAN"
 
 @dataclass()
 class Token:

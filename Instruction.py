@@ -7,7 +7,8 @@ class Instruction:
     Sub: ClassVar["Instruction"]
     Mul: ClassVar["Instruction"]
     Div: ClassVar["Instruction"]
-    pass
+    LessThan: ClassVar["Instruction"]
+    GreaterThan: ClassVar["Instruction"]
 
 @dataclass
 class PushInt(Instruction):
@@ -41,10 +42,26 @@ class _Div(Instruction):
             cls._instance = super().__new__(cls)  # type: ignore
         return cls._instance
 
+class _LessThan(Instruction):
+    _instance = None
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)  # type: ignore
+        return cls._instance
+
+class _GreaterThan(Instruction):
+    _instance = None
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)  # type: ignore
+        return cls._instance
+
 Instruction.Add = _Add()
 Instruction.Sub = _Sub()
 Instruction.Mul = _Mul()
 Instruction.Div = _Div()
+Instruction.LessThan = _LessThan()
+Instruction.GreaterThan = _GreaterThan()
 
 @dataclass()
 class LoadLocal(Instruction):
@@ -53,3 +70,7 @@ class LoadLocal(Instruction):
 @dataclass()
 class StoreLocal(Instruction):
     slot: int
+
+@dataclass()
+class JumpIfFalse(Instruction):
+    target: int

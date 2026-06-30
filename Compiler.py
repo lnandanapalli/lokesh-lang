@@ -75,5 +75,9 @@ class Compiler:
                 return Instruction.Mul
             case TokenType.SLASH:
                 return Instruction.Div
+            case TokenType.LESS_THAN:
+                return Instruction.LessThan
+            case TokenType.GREATER_THAN:
+                return Instruction.GreaterThan
             case _:
                 raise ValueError(f"Unsupported operator {operator}")

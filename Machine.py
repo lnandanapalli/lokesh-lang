@@ -35,6 +35,20 @@ class Machine:
             right = self._pop()
             left = self._pop()
             self.stack.append(int(left / right))
+        elif instruction is Instruction.LessThan:
+            right = self._pop()
+            left = self._pop()
+            if left < right:
+                self.stack.append(1)
+            else:
+                self.stack.append(0)
+        elif instruction is Instruction.GreaterThan:
+            right = self._pop()
+            left = self._pop()
+            if left > right:
+                self.stack.append(1)
+            else:
+                self.stack.append(0)
         else:
             raise ValueError(f"Unsupported instruction {instruction}")
 

@@ -8,11 +8,7 @@ from Token import Token
 from Lexer import Lexer
 
 source: str = """
-let day = 161;
-let month = 6;
-update day to 160;
-let birthday = day + month;
-birthday;
+1 < 2;
 """
 print(source)
 

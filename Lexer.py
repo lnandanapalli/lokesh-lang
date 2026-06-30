@@ -64,6 +64,10 @@ class Lexer:
             self.tokens.append(Token(TokenType.STAR))
         elif current_char == "/":
             self.tokens.append(Token(TokenType.SLASH))
+        elif current_char == "<":
+            self.tokens.append(Token(TokenType.LESS_THAN))
+        elif current_char == ">":
+            self.tokens.append(Token(TokenType.GREATER_THAN))
         elif current_char.isdigit():
             self._scan_number()
         elif current_char.isspace():

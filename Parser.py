@@ -1,14 +1,15 @@
 """
 Grammar:
-
+cexpression -> expression (('<' | '>') expression)?
 expression -> term ('+' | '-' term)*
 term -> factor ('*' | '/' factor)*
 factor -> integer | '(' expression ')' | identifier
 
 program -> statement*
 statement -> "let" identifier "=" expression ';'
-             | expression ';'
+             | cexpression ';'
              | "update" identifier "to" expression;
+             "if" "(" cexpression ")" "{" statement* "}";
 identifier -> [a-z][a-z]*
 
 Start symbol = statement
@@ -60,9 +61,17 @@ class Parser:
         return VarDeclaration(name, initializer)
 
     def _parse_expression_statement(self) -> Stmt:
-        expression: Expr = self._parse_expression()
+        expression: Expr = self._parse_cexpression()
         self._consume(TokenType.SEMICOLON, "Expected semicolon at the end of statement")
         return ExpressionStmt(expression)
+
+    def _parse_cexpression(self) -> Expr:
+        working_expression: Expr = self._parse_expression()
+        if self._match(TokenType.LESS_THAN, TokenType.GREATER_THAN):
+            operator: Token = self._previous()
+            parsed_expression: Expr = self._parse_expression()
+            working_expression = Binary(working_expression, operator, parsed_expression)
+        return working_expression
 
     def _parse_expression(self) -> Expr:
         self._log("parseExpression() called, will start by parsing term()")
