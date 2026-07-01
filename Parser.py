@@ -3,14 +3,21 @@ Grammar:
 cexpression -> expression (('<' | '>') expression)?
 expression -> term ('+' | '-' term)*
 term -> factor ('*' | '/' factor)*
-factor -> integer | '(' expression ')' | identifier
+factor -> integer | '(' expression ')' | identifier | invocation
+
+invocation -> identifier "(" params? ")"
+params -> expression ("," expression)*
 
 program -> statement*
 statement -> "let" identifier "=" expression ";"
            | cexpression ";"
            | identifier "=" cexpression ";"
            | "if" "(" cexpression ")" "{" statement* "}"
-identifier -> [a-z][a-z]*
+           | "fun" identifier "(" args? ")" "{" statement* "}"
+           | "return" cexpression ";"
+
+args -> identifier ("," identifier)*
+identifier -> [a-zA-Z_][a-zA-Z0-9_]*
 
 Start symbol = statement
 """

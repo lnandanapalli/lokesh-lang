@@ -23,12 +23,15 @@ class Lexer:
         while not isinstance(peek_result, EOF) and peek_result.isdigit():
             self._advance()
             peek_result = self._peek()
+        if not isinstance(peek_result, EOF) and (peek_result.isalpha() or peek_result == "_"):
+            raise ValueError(
+                f"Invalid identifier: cannot start with a digit near '{self.input[number_start:self.current_position + 1]}'")
         self.tokens.append(Token(TokenType.NUMBER, self.input[number_start:self.current_position]))
 
     def _scan_identifier(self):
         identifier_start: int = self.current_position - 1
         peek_result = self._peek()
-        while not isinstance(peek_result, EOF) and peek_result.isalpha():
+        while not isinstance(peek_result, EOF) and (peek_result.isalpha() or peek_result == "_" or peek_result.isdigit()):
             self._advance()
             peek_result = self._peek()
         literal = self.input[identifier_start:self.current_position]
@@ -75,7 +78,7 @@ class Lexer:
         elif current_char.isspace():
             # Whitespace Ignored
             pass
-        elif current_char.isalpha():
+        elif current_char.isalpha() or current_char == "_":
             self._scan_identifier()
         else:
             raise ValueError(f"Unexpected token '{current_char}'")

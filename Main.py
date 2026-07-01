@@ -8,11 +8,12 @@ from Token import Token
 from Lexer import Lexer
 
 source: str = """
-let x = 3;
+let x = 1;
 if (x < 5) {
-x = x + 10;
+    let x = 99;
+    x = x + 1;
 }
-x;
+x + 1;
 """
 print(source)
 
